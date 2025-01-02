@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+            <h1>ToDo List</h1><br><br><br>
+            {% if tasks %}
+            {% for task in tasks %}
+                <div class="alert alert-primary" role="alert">
+                {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.due_date }}
+                </div>
+            {% endfor %}
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

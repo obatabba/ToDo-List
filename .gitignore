@@ -1,2 +1,5 @@
 Pipfile
 Pipfile.lock
+Project plane.txt
+__pycache__/
+.vscode/
