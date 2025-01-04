@@ -1,32 +1,35 @@
 <div class="container">
-    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
-      <div class="col-md-3 mb-2 mb-md-0">
-        <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
-          <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
-        </a>
-      </div>
+  <header
+    class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+    <div class="col-md-3 mb-2 mb-md-0">
+      <a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+        <svg class="bi" width="40" height="32" role="img" aria-label="Bootstrap">
+          <use xlink:href="#bootstrap"></use>
+        </svg>
+      </a>
+    </div>
 
-      <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
-        <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Home</a></li>
-        <li><a href="#" class="nav-link px-2">Features</a></li>
-        <li><a href="#" class="nav-link px-2">Pricing</a></li>
-        <li><a href="#" class="nav-link px-2">FAQs</a></li>
-        <li><a href="#" class="nav-link px-2">About</a></li>
-      </ul>
+    <ul class="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+      <li><a href="{% url 'home' %}" class="nav-link px-2 link-secondary">Home</a></li>
+      <li><a href="#" class="nav-link px-2">Features</a></li>
+      <li><a href="#" class="nav-link px-2">Pricing</a></li>
+      <li><a href="#" class="nav-link px-2">FAQs</a></li>
+      <li><a href="#" class="nav-link px-2">About</a></li>
+    </ul>
 
+    <div class="col-md-3 text-end">
       {% if not user.is_authenticated %}
-        <div class="col-md-3 text-end">
-            <a type="button" class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
-            <a type="button" class="btn btn-primary" href="{ url 'register' }">Sign-up</a>
-        </div>
-      {% else %}
-        <div class="col-md-3 text-end">
-            <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button class="btn btn-outline-primary me-2">Logout</button>
-            </form>
-        </div>
-      {% endif %}
+      <a type="button" class="btn btn-outline-primary me-2" href="{% url 'login' %}">Login</a>
+      <a type="button" class="btn btn-primary" href="{% url 'register' %}">Sign-up</a>
 
-    </header>
-  </div>
+      {% else %}
+      <form action="{% url 'logout' %}" method="post">
+        <button class="btn btn-gray disabled me-2">{{ user.username }}</button>
+        <button type="submit" class="btn btn-outline-primary">Logout</button>
+        {% csrf_token %}
+      </form>
+      {% endif %}
+    </div>
+
+  </header>
+</div>

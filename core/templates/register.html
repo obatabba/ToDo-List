@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="col-md-5 offset-md-3">
+    <h1>Sign Up</h1><br/>
+    
+    <form method="post" action="{% url 'register' %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <input type="text" name="username" class="form-control" required placeholder="Choose a username" />
+        {% if form.username.errors %}
+        <span class="text-danger">{{ form.username.errors.0 }}</span>
+        {% endif %}
+      </div>
+  
+      <div class="mb-3">
+        <input type="password" name="password1" id="password1" class="form-control" required
+          placeholder="Create a password" />
+        {% if form.password1.errors %}
+        <span class="text-danger">{{ form.password1.errors.0 }}</span>
+        {% endif %}
+      </div>
+  
+      <div class="mb-3">
+        <input type="password" name="password2" id="password2" class="form-control" required
+          placeholder="Confirm your password" />
+          {% if form.password2.errors %}
+              <span class="text-danger">{{ form.password2.errors.0 }}</span>
+          {% endif %}
+      </div>
+      <br/>
+      <button type="submit" class="btn btn-secondary">Sign Up</button>
+    </form><br>
+
+    <p style="color: rgba(0, 0, 0, 0.651);">
+        Already have an account? <a href="{% url 'login' %}">Login</a> here!
+      </p>
+  </div>
+
+{% endblock %}
