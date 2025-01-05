@@ -21,9 +21,15 @@
 
             {% if tasks %}
             {% for task in tasks %}
-            <div class="alert alert-primary" role="alert">
-                {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.due_date }}
-            </div>
+                {% if task.is_overdue %}
+                <div class="alert alert-danger" role="alert">
+                    {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.deadline }}
+                </div>
+                {% else %}
+                <div class="alert alert-primary" role="alert">
+                    {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.deadline }}
+                </div>
+                {% endif %}
             {% endfor %}
             {% endif %}
         </div>

@@ -33,6 +33,9 @@ def register(request):
 
 def home(request):
     tasks = Task.objects.all()
+    for task in tasks:
+        task.check_overdue()
+
     form = TaskAddFrom()
     return render(request, 'home.html', {'tasks': list(tasks), 'form': form})
 

@@ -5,7 +5,7 @@ from .models import Task
 class TaskAddFrom(forms.ModelForm):
     class Meta:
         model = Task
-        fields = ['title', 'description', 'priority', 'due_date']
+        fields = ['title', 'description', 'priority', 'deadline']
 
     title = forms.CharField(
         max_length=80,
@@ -38,7 +38,7 @@ class TaskAddFrom(forms.ModelForm):
         )
     )
 
-    due_date = forms.DateTimeField(
+    deadline = forms.DateTimeField(
         required=False,
         widget=forms.widgets.DateTimeInput(
             attrs={
