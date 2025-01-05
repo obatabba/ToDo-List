@@ -2,7 +2,8 @@ from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
-from django.shortcuts import redirect, render
+from django.http import HttpResponseForbidden, HttpResponseNotAllowed
+from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import TaskAddFrom
 from .models import Task
@@ -50,3 +51,18 @@ def create_task(request):
             return redirect('home')
     return redirect('home')
         
+
+def check_task(request, task_id):
+    """If Task.is_completed is False set it to True, otherwise set it to False."""
+    task = get_object_or_404(Task, id=task_id)
+    # if task.user == request.user:
+    if task.is_completed:
+        task.is_completed = False
+        task.save()
+        return redirect('home')
+    else:
+        task.is_completed = True
+        task.save()
+        return redirect('home')
+    # else:
+        # return HttpResponseForbidden()
