@@ -4,9 +4,9 @@ from django.db import models
 
 class Task(models.Model):
     PRIORITY_CHOICES = {
-        'H': 'High',
+        'L': 'Low',
         'N': 'Normal',
-        'L': 'Low'
+        'H': 'High'
     }
 
     STATUS_CHOICES = {
