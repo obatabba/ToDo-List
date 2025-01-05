@@ -1,0 +1,21 @@
+<div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskAddModal" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Add a new task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form action="{% url 'create_task' %}" method="post" id="task-form">
+          {{ form.as_p }}
+          {% csrf_token %}
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('task-modal')"
+          data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" form="task-form">Add</button>
+      </div>
+    </div>
+  </div>
+</div>

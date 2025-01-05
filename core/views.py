@@ -3,6 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
 from django.shortcuts import redirect, render
+
+from .forms import TaskAddFrom
 from .models import Task
 
 
@@ -31,4 +33,17 @@ def register(request):
 
 def home(request):
     tasks = Task.objects.all()
-    return render(request, 'home.html', {'tasks': list(tasks)})
+    form = TaskAddFrom()
+    return render(request, 'home.html', {'tasks': list(tasks), 'form': form})
+
+
+def create_task(request):
+    if request.method == 'POST':
+        form = TaskAddFrom(request.POST)
+        if form.is_valid():
+            task: Task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('home')
+    return redirect('home')
+        

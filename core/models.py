@@ -3,6 +3,7 @@ from django.db import models
 
 
 class Task(models.Model):
+    # PRIORITY_CHOICES is referenced in forms.py, 'rename' if necessary
     PRIORITY_CHOICES = {
         'L': 'Low',
         'N': 'Normal',

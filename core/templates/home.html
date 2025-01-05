@@ -21,14 +21,21 @@
 
             {% if tasks %}
             {% for task in tasks %}
-                <div class="alert alert-primary" role="alert">
+            <div class="alert alert-primary" role="alert">
                 {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.due_date }}
-                </div>
+            </div>
             {% endfor %}
             {% endif %}
-
+        </div>
+        
+        <div class="col-4"><br><br><br><br><br>
+            <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#taskModal">
+                New Task +
+            </button>
         </div>
     </div>
 </div>
+
+{% include 'add_task_modal.html' %}
 
 {% endblock %}
