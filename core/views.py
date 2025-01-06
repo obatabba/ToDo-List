@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from django.http import HttpResponseForbidden
+from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import TaskAddFrom
@@ -66,3 +67,14 @@ def check_task(request, task_id):
             return redirect('home')
     else:
         return HttpResponseForbidden()
+
+
+@login_required()
+def delete_task(request, task_id):
+    if request.method == 'POST':
+        task = get_object_or_404(Task, id=task_id)
+        if task.user == request.user:
+            task.delete()
+            messages.success(request, 'Task deleted successfully.')
+            return redirect('home')
+    return HttpResponseForbidden()
