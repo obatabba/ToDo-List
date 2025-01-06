@@ -1,8 +1,8 @@
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
-from django.contrib import messages
-from django.http import HttpResponseForbidden, HttpResponseNotAllowed
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import TaskAddFrom
@@ -15,9 +15,6 @@ class Login(LoginView):
 
 class Logout(LogoutView):
     next_page = 'home'
-    def dispatch(self, request, *args, **kwargs):
-        messages.success(request, "You have been logged out successfully.")
-        return super().dispatch(request, *args, **kwargs)
     
 
 def register(request):
@@ -32,8 +29,9 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
+@login_required()
 def home(request):
-    tasks = Task.objects.all()
+    tasks = Task.objects.filter(user=request.user)
     for task in tasks:
         task.check_overdue()
 
@@ -41,6 +39,7 @@ def home(request):
     return render(request, 'home.html', {'tasks': list(tasks), 'form': form})
 
 
+@login_required()
 def create_task(request):
     if request.method == 'POST':
         form = TaskAddFrom(request.POST)
@@ -52,17 +51,18 @@ def create_task(request):
     return redirect('home')
         
 
+@login_required()
 def check_task(request, task_id):
     """If Task.is_completed is False set it to True, otherwise set it to False."""
     task = get_object_or_404(Task, id=task_id)
-    # if task.user == request.user:
-    if task.is_completed:
-        task.is_completed = False
-        task.save()
-        return redirect('home')
+    if task.user == request.user:
+        if task.is_completed:
+            task.is_completed = False
+            task.save()
+            return redirect('home')
+        else:
+            task.is_completed = True
+            task.save()
+            return redirect('home')
     else:
-        task.is_completed = True
-        task.save()
-        return redirect('home')
-    # else:
-        # return HttpResponseForbidden()
+        return HttpResponseForbidden()
