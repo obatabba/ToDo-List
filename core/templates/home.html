@@ -21,9 +21,8 @@
 
             {% if tasks %}
             {% for task in tasks %}
-                {% if task.is_completed %}
-                <div class="alert alert-success d-flex justify-content-between align-items-center" role="alert">
-                    <span style="text-decoration: line-through;">
+                <div class="alert {% if task.is_overdue %} alert-danger {% else %} alert-primary {% endif %} d-flex justify-content-between align-items-center" role="alert">
+                    <span>
                         {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.deadline }}
                     </span>
                     <form action="{% url 'check_task' task.id %}" method="POST">
@@ -44,59 +43,6 @@
                         </span>
                     </form>                    
                 </div>
-
-                {% elif task.is_overdue %}
-                <div class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
-                    <span>
-                        {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.deadline }}
-                    </span>
-                    <form action="{% url 'check_task' task.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" style="border: none; background: none; padding: 0;">
-                            <i class="bi bi-square"></i>
-                        </button>
-                        <span class="dropstart">
-                            <i class="bi bi-three-dots-vertical" type="button" data-bs-toggle="dropdown"></i>
-                            <ul class="dropdown-menu mt-4">
-                                <li><a class="dropdown-item text-center">Edit <i
-                                    class="bi bi-pencil-fill"></i></a></li>
-                                <li><a class="dropdown-item text-center"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal"
-                                    data-task-id="{{ task.id }}">Delete <i class="bi bi-trash-fill"></i>
-                                    </a>
-                                </li>
-                            </ul>        
-                        </span>
-                    </form>    
-                </div>
-                
-                {% else %}
-                <div class="alert alert-primary d-flex justify-content-between align-items-center" role="alert">
-                    <span>
-                        {{ task.title }} | added at: {{ task.added_at }} | due: {{ task.deadline }}
-                    </span>
-                    <form action="{% url 'check_task' task.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" style="border: none; background: none; padding: 0;">
-                            <i class="bi bi-square"></i>
-                        </button>
-                        <span class="dropstart">
-                            <i class="bi bi-three-dots-vertical" type="button" data-bs-toggle="dropdown"></i>
-                            <ul class="dropdown-menu mt-4">
-                                <li><a class="dropdown-item text-center">Edit <i
-                                    class="bi bi-pencil-fill"></i></a></li>
-                                <li><a class="dropdown-item text-center"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#deleteModal"
-                                    data-task-id="{{ task.id }}">Delete <i class="bi bi-trash-fill"></i>
-                                    </a>
-                                </li>
-                            </ul>        
-                        </span>
-                    </form>
-                </div>
-                {% endif %}
             {% endfor %}
             {% endif %}
         </div>

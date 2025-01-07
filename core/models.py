@@ -1,6 +1,11 @@
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime
 from django.conf import settings
 from django.db import models
+import pytz
+
+
+def default_deadline():
+    return now().replace(hour=23, minute=59, second=59)
 
 
 class Task(models.Model):
@@ -16,15 +21,21 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='L')
     added_at = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField(null=True, blank=True)
+    deadline = models.DateTimeField(default=default_deadline)
     is_completed = models.BooleanField(default=False)
-    is_overdue = models.BooleanField(default=False)
 
-    def check_overdue(self):
-        """
-        Set 'is_overdue' attribute to True for Task objects with deadline less than django.utils.timezone.now()
-        """
-        if self.deadline:
-            if not self.is_overdue and self.deadline < now():
-                self.is_overdue = True
-                self.save()
+    @property
+    def is_overdue(self):
+        """Determine if the task is overdue based on user's time zone."""
+        if self.is_completed:
+            return True
+        else:
+            user_tz = pytz.timezone('Asia/Damascus') # test timezone
+
+            # Convert deadline to user's time zone
+            user_deadline = self.deadline.astimezone(user_tz)
+            user_current_time = localtime(timezone=user_tz)
+            return user_deadline < user_current_time
+        
+    # def __str__(self):
+    #     return f'{self.title} | {self.priority} | deadline: {self.deadline}'
