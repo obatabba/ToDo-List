@@ -1,25 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
-    <title>ToDo List</title>
-</head>
-<body>
-    
-    {% include 'navbar.html' %}
-    <br>
-    <div class="container">
-        {% block content %}
-        {% endblock %}   
-    </div>
+    <head>
+        {% load static %}
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/bootstrap-icons.min.css' %}">
+        <title>ToDo List</title>
+    </head>
+    <body>
+        
+        {% include 'navbar.html' %}
+        <br>
+        <div class="container">
+            {% block content %}
+            {% endblock %}   
+        </div>
 
-    {% block scripts %}
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-    {% endblock %}
-</body>
+        {% block scripts %}
+            <script src="{% static 'js/bootstrap.min.js' %}"></script>
+            <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+            <script src="{% static 'js/jquery.min.js' %}"></script>
+            <script src="{% static 'js/js.cookie.min.js' %}"></script>
+            <script>
+                // obtaining the user's time zone
+                const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                // including the time zone in the browser cookies
+                document.cookie = `timezone=${userTimezone};`
+            </script>
+        {% endblock %}
+
+    </body>
 </html>

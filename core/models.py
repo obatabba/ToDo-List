@@ -1,11 +1,11 @@
-from django.utils.timezone import now, localtime
+from datetime import datetime, time, timedelta
+from django.utils.timezone import now, get_current_timezone, localtime, localdate
 from django.conf import settings
 from django.db import models
-import pytz
 
 
 def default_deadline():
-    return now().replace(hour=23, minute=59, second=59)
+    return datetime.combine(now().date() + timedelta(days=1), time(), tzinfo=get_current_timezone())
 
 
 class Task(models.Model):
@@ -21,21 +21,30 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     priority = models.CharField(max_length=1, choices=PRIORITY_CHOICES, default='L')
     added_at = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField(default=default_deadline)
+    deadline = models.DateTimeField()
     is_completed = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+        if self.deadline is None:
+            self.deadline = default_deadline()
+        super().save(*args, **kwargs)
+
 
     @property
     def is_overdue(self):
         """Determine if the task is overdue based on user's time zone."""
-        if self.is_completed:
-            return True
-        else:
-            user_tz = pytz.timezone('Asia/Damascus') # test timezone
-
+        if not self.is_completed:
             # Convert deadline to user's time zone
-            user_deadline = self.deadline.astimezone(user_tz)
-            user_current_time = localtime(timezone=user_tz)
+            user_deadline = localtime(value=self.deadline)
+            # Get the current time in user's time zone
+            user_current_time = localtime()
             return user_deadline < user_current_time
-        
-    # def __str__(self):
-    #     return f'{self.title} | {self.priority} | deadline: {self.deadline}'
+        return False
+
+    def __str__(self):
+        deadline = localtime(self.deadline)
+        if deadline == default_deadline():
+            return f"{self.title} | deadline: End of today"
+        elif deadline.date() == localdate() + timedelta(days=1): 
+            return f"{self.title} | deadline: Tomorrow {deadline:%I:%m %p}"
+        return f"{self.title} | deadline: {deadline:%a %d %b %I:%m %p}"
