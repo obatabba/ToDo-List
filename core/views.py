@@ -75,3 +75,15 @@ def delete_task(request, task_id):
             messages.success(request, 'Task deleted successfully.')
             return redirect('home')
     return HttpResponseForbidden()
+
+
+@login_required()
+def edit_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id)
+    if request.method == 'POST':
+        form = TaskAddFrom(request.POST, instance=task)
+        if form.is_valid():   
+            form.save()
+            return redirect('home')
+    form = TaskAddFrom(instance=task)
+    return render(request, 'edit_task_modal.html', {'form': form})

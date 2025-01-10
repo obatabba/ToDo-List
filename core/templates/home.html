@@ -33,10 +33,21 @@
                         <span class="dropstart">
                             <i class="bi bi-three-dots-vertical" type="button" data-bs-toggle="dropdown"></i>
                             <ul class="dropdown-menu mt-4">
-                                <li><a class="dropdown-item text-center">Edit <i
-                                    class="bi bi-pencil-fill"></i></a>
+                                <li><a 
+                                        hx-get="{% url 'edit_task' task.id %}"
+                                        hx-target="#editModal"
+                                        hx-trigger="click"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editModal"
+                                        class="dropdown-item text-center">Edit <i class="bi bi-pencil-fill"></i>
+                                    </a>
                                 </li>
                                 <li><a class="dropdown-item text-center"
+                                        hx-on:click="
+                                        document.querySelector('#delete-modal-body').innerText = '{{task.title}}';
+                                        const deleteForm = document.getElementById('deleteForm');
+                                        deleteForm.action = '{% url 'delete_task' task.id %}';
+                                        "
                                         data-bs-toggle="modal"
                                         data-bs-target="#deleteModal"
                                         data-task-id="{{ task.id }}">Delete <i class="bi bi-trash-fill"></i>
@@ -59,29 +70,40 @@
 </div>
 
 {% include 'add_task_modal.html' %}
-{% include 'delete_task_modal.html' %}
 
+<!-- Task delete modal -->
+<div
+    id="deleteModal"
+    class="modal fade"
+    aria-hidden="true"
+    tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Delete task ?</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="delete-modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <form action="" method="post" id="deleteForm">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </div>
+        </div>
+      </div>
+</div>
 
-{% endblock %}
-
-{% block scripts %}
-    {{ block.super }}
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const deleteModal = document.getElementById('deleteModal');
-            const deleteForm = document.getElementById('deleteForm');
-
-            deleteModal.addEventListener('show.bs.modal', (event) => {
-                // Button that triggered the modal
-                const button = event.relatedTarget;
-                // Extract task ID from data-task-id
-                const taskId = button.getAttribute('data-task-id');
-                // Update the form action URL
-                deleteForm.action = `/delete_task/${taskId}/`;
-            });
-        });
-
-    </script>
+<!-- Task edit modal -->
+<div
+    id="editModal"
+    class="modal fade"
+    aria-hidden="true"
+    tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content"></div>
+    </div>
+</div>
 
 {% endblock %}
