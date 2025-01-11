@@ -4,11 +4,8 @@ from django.conf import settings
 from django.db import models
 
 
-def default_deadline():
-    return datetime.combine(now().date() + timedelta(days=1), time(), tzinfo=get_current_timezone())
-
-
 class Task(models.Model):
+
     # PRIORITY_CHOICES is referenced in forms.py, 'rename' if necessary
     PRIORITY_CHOICES = {
         'L': 'Low',
@@ -24,9 +21,14 @@ class Task(models.Model):
     deadline = models.DateTimeField()
     is_completed = models.BooleanField(default=False)
 
+    @staticmethod
+    def default_deadline():
+        return datetime.combine(
+            now().date() + timedelta(days=1), time(), tzinfo=get_current_timezone())
+    
     def save(self, *args, **kwargs):
         if self.deadline is None:
-            self.deadline = default_deadline()
+            self.deadline = self.default_deadline()
         super().save(*args, **kwargs)
 
 
@@ -44,7 +46,7 @@ class Task(models.Model):
     def __str__(self):
         # deadline = localtime(self.deadline)
         deadline = localtime(value=self.deadline)
-        if deadline == default_deadline():
+        if deadline == self.default_deadline():
             return f"{self.title} | deadline: End of today"
         elif deadline.date() == localdate() + timedelta(days=1): 
             return f"{self.title} | deadline: Tomorrow {deadline:%I:%M %p}"
