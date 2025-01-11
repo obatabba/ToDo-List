@@ -83,11 +83,11 @@ def check_task(request, task_id):
         if task.is_completed:
             task.is_completed = False
             task.save()
-            return redirect('home')
+            return render(request, 'task.html', {'task': task})
         else:
             task.is_completed = True
             task.save()
-            return redirect('home')
+            return render(request, 'task.html', {'task': task})
     else:
         return HttpResponseForbidden()
 
