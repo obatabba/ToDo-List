@@ -42,9 +42,10 @@ class Task(models.Model):
         return False
 
     def __str__(self):
-        deadline = localtime(self.deadline)
+        # deadline = localtime(self.deadline)
+        deadline = localtime(value=self.deadline)
         if deadline == default_deadline():
             return f"{self.title} | deadline: End of today"
         elif deadline.date() == localdate() + timedelta(days=1): 
-            return f"{self.title} | deadline: Tomorrow {deadline:%I:%m %p}"
-        return f"{self.title} | deadline: {deadline:%a %d %b %I:%m %p}"
+            return f"{self.title} | deadline: Tomorrow {deadline:%I:%M %p}"
+        return f"{self.title} | deadline: {deadline:%a %d %b %I:%M %p}"
