@@ -110,6 +110,6 @@ def edit_task(request, task_id):
         form = TaskAddFrom(request.POST, instance=task)
         if form.is_valid():   
             form.save()
-            return redirect('home')
+            return render(request, 'task.html', {'task': task})
     form = TaskAddFrom(instance=task)
     return render(request, 'edit_task_modal.html', {'form': form})

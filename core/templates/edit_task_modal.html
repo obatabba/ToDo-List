@@ -5,14 +5,14 @@
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
     </div>
     <div class="modal-body">
-      <form action="{% url 'edit_task' form.instance.id %}" method="post" id="task-edit-form">
+      <form hx-post="{% url 'edit_task' form.instance.id %}" hx-target="#task-{{form.instance.id}}" hx-swap="outerHTML" method="post" id="task-edit-form">
         {{ form.as_p }}
         {% csrf_token %}
       </form>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      <button type="submit" class="btn btn-primary" form="task-edit-form">Save</button>
+      <button type="submit" class="btn btn-primary" form="task-edit-form" data-bs-dismiss="modal">Save</button>
     </div>
   </div>
 </div>
