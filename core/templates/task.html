@@ -1,0 +1,36 @@
+<div class="alert {% if task.is_overdue %} alert-danger {% elif task.is_completed %} alert-success {% else %} alert-primary {% endif %} d-flex justify-content-between align-items-center" role="alert">
+    <span {% if task.is_completed %} style="text-decoration: line-through;" {% endif %}>
+        {{ task }}
+    </span>
+    <form action="{% url 'check_task' task.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" style="border: none; background: none; padding: 0;">
+            <i class="bi {% if task.is_completed %} bi-check-square-fill {% else %} bi-square {% endif %}"></i>
+        </button>
+        <span class="dropstart">
+            <i class="bi bi-three-dots-vertical" type="button" data-bs-toggle="dropdown"></i>
+            <ul class="dropdown-menu mt-4">
+                <li><a 
+                        hx-get="{% url 'edit_task' task.id %}"
+                        hx-target="#editModal"
+                        hx-trigger="click"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editModal"
+                        class="dropdown-item text-center">Edit <i class="bi bi-pencil-fill"></i>
+                    </a>
+                </li>
+                <li><a class="dropdown-item text-center"
+                        hx-on:click="
+                        document.querySelector('#delete-modal-body').innerText = '{{task.title}}';
+                        const deleteForm = document.getElementById('deleteForm');
+                        deleteForm.action = '{% url 'delete_task' task.id %}';
+                        "
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
+                        data-task-id="{{ task.id }}">Delete <i class="bi bi-trash-fill"></i>
+                    </a>
+                </li>
+            </ul>        
+        </span>
+    </form>                    
+</div>

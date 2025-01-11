@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.contrib.auth.views import LoginView, LogoutView
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -8,7 +9,6 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from .forms import TaskAddFrom
 from .models import Task
-
 
 class Login(LoginView):
     template_name = 'login.html'
@@ -33,8 +33,34 @@ def register(request):
 @login_required()
 def home(request):
     tasks = Task.objects.filter(user=request.user)
+    
+    old_tasks = tasks.filter(
+        deadline__lte=Task.default_deadline() - timedelta(days=2))
+    
+    yesterday_tasks = tasks.filter(
+        deadline__gt=Task.default_deadline() - timedelta(days=2),
+        deadline__lte=Task.default_deadline() - timedelta(days=1))
+
+    today_tasks = tasks.filter(
+        deadline__gt=Task.default_deadline() - timedelta(days=1),
+        deadline__lte=Task.default_deadline())
+    
+    tomorrow_tasks = tasks.filter(
+        deadline__gt=Task.default_deadline(),
+        deadline__lte=Task.default_deadline() + timedelta(days=1))
+
+    scheduled_tasks = tasks.filter(
+        deadline__gt=Task.default_deadline() + timedelta(days=1))
+    
     form = TaskAddFrom()
-    return render(request, 'home.html', {'tasks': list(tasks), 'form': form})
+    context = {
+        'old_tasks': list(old_tasks),
+        'yesterday_tasks': list(yesterday_tasks),
+        'today_tasks': list(today_tasks),
+        'tomorrow_tasks': list(tomorrow_tasks),
+        'scheduled_tasks': list(scheduled_tasks),
+        'form': form}
+    return render(request, 'home.html', context=context)
 
 
 @login_required()

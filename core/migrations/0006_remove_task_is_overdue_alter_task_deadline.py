@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='task',
             name='deadline',
-            field=models.DateTimeField(default=core.models.default_deadline),
+            field=models.DateTimeField(default=core.models.Task.default_deadline),
         ),
     ]

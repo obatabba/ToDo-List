@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 
@@ -19,48 +20,88 @@
             </div>
             <br><br>
 
-            {% if tasks %}
-            {% for task in tasks %}
-                <div class="alert {% if task.is_overdue %} alert-danger {% elif task.is_completed %} alert-success {% else %} alert-primary {% endif %} d-flex justify-content-between align-items-center" role="alert">
-                    <span {% if task.is_completed %} style="text-decoration: line-through;" {% endif %}>
-                        {{ task }}
-                    </span>
-                    <form action="{% url 'check_task' task.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" style="border: none; background: none; padding: 0;">
-                            <i class="bi {% if task.is_completed %} bi-check-square-fill {% else %} bi-square {% endif %}"></i>
+            <div class="accordion" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                            Old Tasks
                         </button>
-                        <span class="dropstart">
-                            <i class="bi bi-three-dots-vertical" type="button" data-bs-toggle="dropdown"></i>
-                            <ul class="dropdown-menu mt-4">
-                                <li><a 
-                                        hx-get="{% url 'edit_task' task.id %}"
-                                        hx-target="#editModal"
-                                        hx-trigger="click"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editModal"
-                                        class="dropdown-item text-center">Edit <i class="bi bi-pencil-fill"></i>
-                                    </a>
-                                </li>
-                                <li><a class="dropdown-item text-center"
-                                        hx-on:click="
-                                        document.querySelector('#delete-modal-body').innerText = '{{task.title}}';
-                                        const deleteForm = document.getElementById('deleteForm');
-                                        deleteForm.action = '{% url 'delete_task' task.id %}';
-                                        "
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#deleteModal"
-                                        data-task-id="{{ task.id }}">Delete <i class="bi bi-trash-fill"></i>
-                                    </a>
-                                </li>
-                            </ul>        
-                        </span>
-                    </form>                    
+                    </h2>
+                    <div id="flush-collapseOne" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            {% for task in old_tasks %}
+                            {% include 'task.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-            {% endfor %}
-            {% endif %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                            Yesterday Tasks
+                        </button>
+                    </h2>
+                    <div id="flush-collapseTwo" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            {% for task in yesterday_tasks %}
+                            {% include 'task.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseThree" aria-expanded="true"
+                            aria-controls="flush-collapseThree">
+                            Today Tasks
+                        </button>
+                    </h2>
+                    <div id="flush-collapseThree" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            {% for task in today_tasks %}
+                            {% include 'task.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseFour" aria-expanded="false"
+                            aria-controls="flush-collapseFour">
+                            Tomorrow Tasks
+                        </button>
+                    </h2>
+                    <div id="flush-collapseFour" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            {% for task in tomorrow_tasks %}
+                            {% include 'task.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseFive" aria-expanded="false"
+                            aria-controls="flush-collapseFive">
+                            Scheduled Tasks
+                        </button>
+                    </h2>
+                    <div id="flush-collapseFive" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            {% for task in scheduled_tasks %}
+                            {% include 'task.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        
+
         <div class="col-4"><br><br><br><br><br>
             <button type="button" class="btn btn-success btn-lg" data-bs-toggle="modal" data-bs-target="#taskModal">
                 New Task +
@@ -72,35 +113,27 @@
 {% include 'add_task_modal.html' %}
 
 <!-- Task delete modal -->
-<div
-    id="deleteModal"
-    class="modal fade"
-    aria-hidden="true"
-    tabindex="-1">
+<div id="deleteModal" class="modal fade" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Delete task ?</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="delete-modal-body"></div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-            <form action="" method="post" id="deleteForm">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-          </div>
+            <div class="modal-header">
+                <h5 class="modal-title">Delete task ?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="delete-modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="" method="post" id="deleteForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
         </div>
-      </div>
+    </div>
 </div>
 
 <!-- Task edit modal -->
-<div
-    id="editModal"
-    class="modal fade"
-    aria-hidden="true"
-    tabindex="-1">
+<div id="editModal" class="modal fade" aria-hidden="true" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content"></div>
     </div>
